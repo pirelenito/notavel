@@ -1,16 +1,33 @@
 var watch = require('watch')
 var debounce = require('lodash.debounce')
-var runGit = require('./run-git')
-var path = require('path')
+var commitAll = require('./commit-all')
+var EventEmitter = require('events')
 
-var targetPath = path.join(__dirname, '../tmp')
+module.exports = function (targetPath) {
+  var autoCommiter = new EventEmitter()
+  autoCommiter.iddle = true
 
-var commit = debounce(function () {
-  runGit(targetPath, 'add --all --force', function () {
-    runGit(targetPath, 'commit -m "Changes!"', function () {
-      console.log(arguments)
+  autoCommiter.stop = function () {
+    watch.unwatchTree(targetPath)
+  }
+
+  autoCommiter.start = function () {
+    watch.watchTree(targetPath, { ignoreDotFiles: true }, function () {
+      autoCommiter.iddle = false
+      autoCommiter.emit('change')
+      update()
     })
-  })
-}, 5000)
+  }
 
-watch.watchTree(targetPath, { ignoreDotFiles: true }, commit)
+  var update = debounce(function () {
+    commitAll(targetPath).then(function () {
+      autoCommiter.iddle = true
+      autoCommiter.emit('commit')
+    }, function (error) {
+      autoCommiter.iddle = true
+      autoCommiter.emit('error', error)
+    })
+  }, 5000)
+
+  return autoCommiter
+}
