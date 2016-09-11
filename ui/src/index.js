@@ -1,7 +1,19 @@
-import style from './index.css'
+import React from 'react'
+import { render } from 'react-dom'
+import injectTapEventPlugin from 'react-tap-event-plugin'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
-const div = document.createElement('div')
-div.innerHTML = '<h1>Hello World</h1>'
-div.className = style.component
+import NoteList from './components/note-list'
+import './index.css'
 
-document.getElementById('ui').appendChild(div)
+const App = () => (
+  <MuiThemeProvider>
+    <NoteList />
+  </MuiThemeProvider>
+)
+
+// Needed for onTouchTap
+// http://stackoverflow.com/a/34015469/988941
+injectTapEventPlugin()
+
+render(<App />, document.getElementById('ui'))
