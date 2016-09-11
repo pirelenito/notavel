@@ -4,30 +4,30 @@ var commitAll = require('./commit-all')
 var EventEmitter = require('events')
 
 module.exports = function (targetPath) {
-  var autoCommiter = new EventEmitter()
-  autoCommiter.iddle = true
+  var autoCommitter = new EventEmitter()
+  autoCommitter.iddle = true
 
-  autoCommiter.stop = function () {
+  autoCommitter.stop = function () {
     watch.unwatchTree(targetPath)
   }
 
-  autoCommiter.start = function () {
+  autoCommitter.start = function () {
     watch.watchTree(targetPath, { ignoreDotFiles: true }, function () {
-      autoCommiter.iddle = false
-      autoCommiter.emit('change')
+      autoCommitter.iddle = false
+      autoCommitter.emit('change')
       update()
     })
   }
 
   var update = debounce(function () {
     commitAll(targetPath).then(function () {
-      autoCommiter.iddle = true
-      autoCommiter.emit('commit')
+      autoCommitter.iddle = true
+      autoCommitter.emit('commit')
     }, function (error) {
-      autoCommiter.iddle = true
-      autoCommiter.emit('error', error)
+      autoCommitter.iddle = true
+      autoCommitter.emit('error', error)
     })
   }, 5000)
 
-  return autoCommiter
+  return autoCommitter
 }
