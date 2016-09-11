@@ -20,4 +20,5 @@ Not exactly an application yet... still just thrown away code.
 
 - [Boostnote](https://b00st.io/): good UI, but forces you to use its own JSON format for the notes;
 - [PileMd](https://github.com/hirokiky/pilemd/): also forces a JSON format;
+- [Laverna](https://github.com/Laverna/laverna): stores data in the browser;
 - [Moeditor](https://github.com/Moeditor/Moeditor): just a Markdown editor.
